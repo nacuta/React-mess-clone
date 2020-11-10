@@ -1,73 +1,72 @@
+
+import React, { useRef, useState } from 'react';
 import './App.css';
-import React, { useEffect, useState } from 'react';
-import Button from '@material-ui/core/Button';
-import { FormControl, Input } from '@material-ui/core';
-import Message from './Message';
-import firebase from 'firebase'
-import FlipMove from 'react-flip-move';
+import ChatRoom from './ChatRoom';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import 'firebase/auth';
+import 'firebase/analytics';
+import firebaseApp from './firebase';
 import SendIcon from '@material-ui/icons/Send';
-import { IconButton } from '@material-ui/core';
+import { IconButton, Input } from '@material-ui/core';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { makeStyles } from '@material-ui/core/styles';
+import { green } from '@material-ui/core/colors';
 
 
-import db from './firebase';
+
+// firebase.initializeApp({
+//   // your config
+// })
+const db = firebaseApp.firestore();
+const auth = firebaseApp.auth();
+// const firestore = firebase.firestore();
+// const analytics = firebase.analytics();
+
 
 function App() {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [username, setUserName] = useState('');
 
-  //useState = variable in REACT
-  //useEffect = run code on a condition in REACT
-  useEffect(() => {
-    db.collection('messages')
-      .orderBy('timestamp').limit(25)
-      .onSnapshot(snapshot => {
-        setMessages(snapshot.docs.map(doc => ({ id: doc.id, message: doc.data() })))
-      });
-  }, [])
-
-
-  useEffect(() => {
-    //run code here
-    // if [] is empty this code will run once when the app component loads
-    setUserName(prompt('Please enter name'));
-  }, [])//condition whatcher
-  const sendMessage = (event) => {
-    //all the logic to send message is here
-    event.preventDefault();
-    db.collection('messages').add({
-      username: username,
-      message: input,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    })
-    setInput('');
-  }
+  const [user] = useAuthState(auth);
 
   return (
     <div className="App">
-      <img src="https://fieldcommgroup.org/sites/default/files/fcglogo-268_5.png?w=100&h=100" />
-      <h1>Hello noul canal de comunicare </h1>
-      <h2>welcome {username}</h2>
-      <form className="app_form">
-        <FormControl className="app_formControl" >
-          <Input className="app_input" placeholder="Enter a message" value={input} onChange={event => setInput(event.target.value)} />
-          <IconButton className="app_iconButton" variant="contained" color="primary" type='submit' disabled={!input} onClick={sendMessage} >
-            <SendIcon />
-          </IconButton>
-          <Button variant="contained" color="primary" type='submit' disabled={!input} onClick={sendMessage} className="button">Send Message</Button>
-        </FormControl>
-      </form>
-      <FlipMove>
-        {
-          messages.map(({ id, message }) => (
+      <header>
+        <img src="https://resource.globenewswire.com/Resource/Download/2dd44ad7-7cb2-4944-a518-0823b39b9f08?size=2?" />
+        <h1>DD internal ChatRoom </h1>
+        <SignOut />
+      </header>
 
-            <Message key={id} username={username} message={message} />
+      <section>
+        {user ? <ChatRoom /> : <SignIn />}
+      </section>
 
-          ))
-        }
-      </FlipMove>
-    </div >
+    </div>
   );
 }
+
+function SignIn() {
+
+  const signInWithGoogle = () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider);
+  }
+
+  return (
+    <>
+      <button className="sign-in" onClick={signInWithGoogle}>Sign in with Google</button>
+      <p>Do not violate the community guidelines or you will be banned for life!</p>
+    </>
+  )
+
+}
+
+function SignOut() {
+  return auth.currentUser && (
+    <button className="sign-out" onClick={() => auth.signOut()}>Sign Out</button>
+  )
+}
+
+
 
 export default App;
