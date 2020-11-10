@@ -1,0 +1,17 @@
+.message {
+    padding:18px;
+    margin:10px;
+    width:fit-content;
+}
+
+.message_user{
+    margin-left: auto;
+    color:blue;
+    text-align:left !important;
+}
+.message_userCard{
+    background-color:blue !important;
+}
+.message_questCard{
+    background-color:grey!important;
+}
