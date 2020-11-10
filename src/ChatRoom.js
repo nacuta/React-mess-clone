@@ -3,9 +3,7 @@ import { useCollectionData } from 'react-firebase-hooks/firestore';
 import firebase from 'firebase'
 // import 'firebase/firestore';
 import firebaseApp from './firebase'
-import { Input } from 'react-chat-elements'
-import { Button } from '@material-ui/core';
-import 'react-chat-elements/dist/main.css';
+
 
 const auth = firebaseApp.auth();
 
@@ -44,19 +42,13 @@ function ChatRoom() {
 
         </main>
 
-        {/* <form onSubmit={sendMessage}>
+        <form onSubmit={sendMessage}>
 
             <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="say something nice" />
 
             <button type="submit" disabled={!formValue}>🕊️</button>
-            <Input
-                placeholder="Type here..."
-                multiline={true}
-                rightButtons={
-                    <button type="submit" disabled={!formValue}>🕊️</button>
-                } />
 
-        </form> */}
+        </form>
     </>)
 }
 
